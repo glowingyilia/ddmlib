@@ -28,10 +28,12 @@ public enum Density implements ResourceEnum {
     XXHIGH( "xxhdpi",  "XX-High Density",  480, 16), //$NON-NLS-1$
     DPI_400("400dpi",  "400 DPI Density",  400,  1), //$NON-NLS-1$
     XHIGH(  "xhdpi",   "X-High Density",   320,  8), //$NON-NLS-1$
+    DPI_280("280dpi",  "280 DPI Density",  280, 22), //$NON-NLS-1$
     HIGH(   "hdpi",    "High Density",     240,  4), //$NON-NLS-1$
     TV(     "tvdpi",   "TV Density",       213, 13), //$NON-NLS-1$
     MEDIUM( "mdpi",    "Medium Density",   160,  4), //$NON-NLS-1$
     LOW(    "ldpi",    "Low Density",      120,  4), //$NON-NLS-1$
+    ANYDPI( "anydpi",  "Any Density",        0, 21), //$NON-NLS-1$
     NODPI(  "nodpi",   "No Density",         0,  4); //$NON-NLS-1$
 
     public static final int DEFAULT_DENSITY = 160;
@@ -41,7 +43,7 @@ public enum Density implements ResourceEnum {
     private final int mDensity;
     private final int mSince;
 
-    private Density(String value, String displayValue, int density, int since) {
+    Density(String value, String displayValue, int density, int since) {
         mValue = value;
         mDisplayValue = displayValue;
         mDensity = density;
@@ -92,7 +94,7 @@ public enum Density implements ResourceEnum {
     }
 
     public String getLegacyValue() {
-        if (this != NODPI) {
+        if (this != NODPI && this != ANYDPI) {
             return String.format("%1$ddpi", getDpiValue());
         }
 
@@ -135,7 +137,15 @@ public enum Density implements ResourceEnum {
      * a density you should consider providing resources for)
      */
     public boolean isRecommended() {
-        return this != TV && this != DPI_400 && this != DPI_560;
+        switch (this) {
+            case TV:
+            case DPI_280:
+            case DPI_400:
+            case DPI_560:
+                return false;
+            default:
+                return true;
+        }
     }
 
     @Override
@@ -145,6 +155,6 @@ public enum Density implements ResourceEnum {
 
     @Override
     public boolean isValidValueForDevice() {
-        return this != NODPI; // nodpi is not a valid config for devices.
+        return this != NODPI && this != ANYDPI; // nodpi/anydpi is not a valid config for devices.
     }
 }
